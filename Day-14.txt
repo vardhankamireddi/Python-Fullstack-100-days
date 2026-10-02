@@ -1,0 +1,109 @@
+
+Joins part[2]::
+
+*** adding clauses to queries***
+-----------------------------------------------------------------------
+
+1). display how many members are from different departments.?
+select d.department_name,count(e.emp_id) as total_employees
+from department d
+left join employees e
+on d.department_id = e.department_id
+group_by department_name;
+
+2). display employees with their number of projects.?
+	select e.name,count(p.project_id) as total_projects
+	from employees e
+	left join projects p
+	on e.emp_id = p.emp_id
+	group by e.name
+	having total_projects> 1;
+
+Queries and sub-queries::
+ sub-queries :: Sub-queries are queries inside queries
+
+ @ it is also called as
+	inner query
+	nested query
+	inner select.
+
+@ purpose of sub queries
+	to breakdown complex problems into smaller queries.
+	to use the result of one query a into another query.
+	to avoid multiple steps
+
+@types of sub-queries
+	**single row sub-query
+			single row subquery returns exactly one row and column. they use comparision operators like =>,>,<,!=.
+characteristics
+	return only one value.
+	can use single-value comaprision operators
+	if subquery returns no rwos or multiple it causes on error.
+syntax ::
+	select column-list
+	from table
+	where column operator(select column from table where condition);
+	
+
+	**multi-row subquery
+		a multi-row subquery returns more than one row ,the in operator is used when you want to compare a value with multiple values returned by the subquery.
+characteristics
+A).	returns multiple rows
+	use the in operator.
+	checks whether a value exists in the list returned by the subquery
+	equivalent to multiple or conditions
+	most commonly used for matching values.
+syntax::
+	select column from table where column in(select column from table where condition);
+
+B). multi row subquery::(any/some):
+	multirow subqueries returns multiple rows, when using ANY or SUM. the condition is true if it matches at least one value returned by the subquery.
+characteristics
+	returns multiple rows,
+	ANY and SOME are interchange
+	condition is true if ANY of the values Satisfy the condition.
+	often used with in,ANY,<ANY,>ANY,>-ANY,<-ANY.
+syntax::
+ 	select column from table
+	where column operator ANY/SOME;
+
+	**nested sub-query
+		nested subqueries are subquery within subqueries. they can be multiple level and deep are executed from the innermost to the outermost
+characteristics
+	multiple level of nesting.
+	inner queires execute first.
+	can combine different types of subqueries
+	useful for complex condition
+
+syntax::
+	select column_list from table
+	where column(select column from table where column =(select column from table where condition));
+	
+	**correlated subquery
+		corelated subqueries are subqueries that reference from the outer query. unlike regulate subqueries that execute once, corelated subqueries execute once for each row proceed by the outer query
+characteristics
+	reference column from the outer query
+	execute multiple times(once per outer row)
+	cannot be executed independently.
+	generally slower than non-corelated subqueries.
+syntax ::
+		select column from table outer alias where condition (select column from table2 inner alias where inner alias,columnouter_alias.column);
+
+	**exists/non exists subquery
+		exists is used to test weather a subquery returns any row. it return true if the subquery returns aleast one row. false otherwise.
+characteristics
+	returns true /flase
+	more efficient than in for large datasets
+syntax::
+		select column from table1
+		where exists(select 1 from table2 where condition)
+syntax :: non exists
+		select column from table1
+		where non exists(select 1 from table2 where condition)
+
+
+ EX:
+
+1). show second max salary from employees.?
+	select max(salary) as second_max
+	 from employees where salary > (select max(salary) from employees);
