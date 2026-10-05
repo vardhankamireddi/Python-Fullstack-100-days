@@ -1,0 +1,86 @@
+
+single_row sub-queries 
+
+syntax ::
+show highest price from products table with product name?
+	select product_name,price from products where price = (select max(price) from products);
+
+2.   show minimum amount from orders with order_id customer_id amount ?
+	  select order_id,customer_id,amount from orders where amount = (select min(amount) from orders);
+
+3. show customer name who place order id 5.?(here customer_name and order_id both are in different tables)
+	 select customer_name
+    	 from customers
+    	 where customer_id=(select customer_id from orders where order_id=5);
+
+4.  find the category of the product that was purchased in order number 1.?
+	 select category from products
+    	 where product_id=(select product_id from orders where order_id=1);
+
+5.  find the name of customers who is living in delhi and MUMBAI.?
+	select customer_name from customers where city in ('delhi','mumbai');
+
+6.  find the products name that have ordered atleast once.?
+	select product_name from products
+	where product_id in (select product_id from producsts)
+
+7. find customers who have placed order at least once.?
+	select customer_name from customers
+	where customer_id in (select customer_id from customers);
+
+Multi-row sub_queries::	
+
+find products priced greater than any products in the FURNITURE category
+	select product_name,price
+	from products
+	where price> ANY (select price from products where category ='furniture');
+	 
+2.  find orders with an amount greater than ANY placed by arjun
+	select order_id,amount
+	from orders	
+	where amount>ANY (select amount from orders
+	where customer_id=(select customer_id from customers where customer_name ='arjun'));
+	
+3.  find products priced higher than all producsts in the furniture category.?
+	select product_name ,price from products
+	where price>ALL(select price from products where category ='furniture');
+
+4.  find products priced than lower of all furniture category.?
+	select product_name,price from products 
+	where price<all(select price from products where category ='furniture'):
+
+5.  find order with an amount greater than all orders placed by meena.?
+	select order_id,amount
+	from orders
+	where amount >all(select amount from orders
+	where customer_id =(select customer_id from customers where customer_name='meena'));
+
+6.    find the names of customers who orderd the most expensive product.
+	select customer_name
+	from customers
+	where customer_id in (
+	select customer_id from orders
+	where product_id = ( select product_id from products
+	where price = (select max(price) from products)));
+
+co-related sub-quries::
+
+
+	select customer_name from customers c 
+	where(select count(*) from orders o where o.customer_id = c.customer_id)>1;
+
+exists sub-queries::
+
+find customers who have placed al-least one order
+	select customer_name from customers c 
+	where exists (select 1 from orders o where o.customer_id = c.customer_id);
+
+not exists sub-queries ::
+
+find customers who have not even placed single order 
+	select customer_name from customers c
+	where not exists (select 1 from orders o where o.customer_id = c.customer_id);
+
+	
+
+
